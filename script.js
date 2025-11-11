@@ -7,6 +7,8 @@ let score = JSON.parse(localStorage.getItem("score")) || {
 
 updateScoreElement();
 
+const AutoElement = document.querySelector('.js-button-auto');
+
 let isAutoPlaying = false;
 let intervalId;
 function autoPlay() {
@@ -16,9 +18,11 @@ function autoPlay() {
       playGame(playerMove);
     }, 1000);
     isAutoPlaying = true;
+    AutoElement.innerText = 'Stop';
   } else {
     clearInterval(intervalId);
     isAutoPlaying = false;
+    AutoElement.innerText = 'Auto Play';
   }
 
 };
@@ -41,25 +45,56 @@ document.querySelector('.js-button-auto')
   .addEventListener('click', () => {
     autoPlay();
   })
+
+function resetScore() {
+  score.wins = 0;
+  score.loses = 0;
+  score.ties = 0;
+  localStorage.removeItem('score');
+  updateScoreElement();
+}
+
+
+function HideResetConfirm() {
+  document.querySelector('.js-confirm-message').innerHTML = '';
+
+}
+
+function ShowResetConfirm() {
+  document.querySelector('.js-confirm-message').innerHTML =
+    `<p>Are you sure you want to reset the score ?</p>
+      <button class="confirm-button js-yes-button">Yes</button>
+      <button class="confirm-button js-no-button">No</button>`
+
+  document.querySelector('.js-yes-button').addEventListener('click', () => {
+    resetScore();
+    HideResetConfirm();
+  });
+
+  document.querySelector('.js-no-button').addEventListener('click', () => {
+    HideResetConfirm();
+  })
+}
+
 document.querySelector('.js-button-reset')
   .addEventListener('click', () => {
-    score.wins = 0;
-    score.loses = 0;
-    score.ties = 0;
-    localStorage.removeItem('score');
-    updateScoreElement();
+    ShowResetConfirm();
   });
 
 
-document.body.addEventListener('keydown',(event)=>{
- if(event.key==='r'){
-  playGame('rock');
- }else if (event.key==='p'){
-  playGame('paper');
- }else if(event.key === 's'){
+document.body.addEventListener('keydown', (event) => {
+  if (event.key === 'r') {
+    playGame('rock');
+  } else if (event.key === 'p') {
+    playGame('paper');
+  } else if (event.key === 's') {
     playGame('scissors');
+  } else if (event.key === 'a') {
+    autoPlay();
+  } else if (event.key === 'Backspace') {
+    resetScore();
   }
- }
+}
 )
 
 function playGame(playerMove) {
